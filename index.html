@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- bootstrap link  -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+  integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+  crossorigin="anonymous"></script>
+<!-- fontawesome links -->
+<script src="https://kit.fontawesome.com/3007e03de8.js" crossorigin="anonymous"></script>
+<!-- google fonts link  -->
+<link href="https://fonts.googleapis.com/css2?family=Antic+Slab&display=swap" rel="stylesheet">
+    <title>To Do List</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container py-4 main-con">
+        <h1 class="text-center">To Do List App</h1>
+        <div class="row">
+            <div class="col-lg-3 d-flex justify-content-center mt-4">
+                <button class="btn btn-primary clr-btn"><i class="fas fa-broom"></i> Clear All</button>
+            </div>
+            <div class="col-lg-6 mt-4">
+                <form>
+                <input type="text" placeholder="Enter Value" class="form-control">
+            </form>
+            </div>
+            <div class="col-lg-3 col-md-6 mx-auto col-sm-6 d-flex justify-content-evenly mt-4">
+                <button class="btn btn-primary create"><i class="fas fa-folder-plus"></i> Create</button>
+                <button class="btn btn-primary" onclick="update()"><i class="fas fa-wrench"></i> Update</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mt-4">
+                <ul></ul>
+            </div>
+        </div>
+</div>
+</body>
+<script>
+    let ul=document.querySelector('ul')
+    let inp=document.querySelector('input')
+    let clrBtn=document.querySelector('.clr-btn')
+    let create=document.querySelector('.create')
+
+    let arr=localStorage.getItem('data')
+    arr=arr?JSON.parse(arr):[]
+
+    function limaker(text,index){
+        // console.log(text,index);
+        let li=document.createElement('li')
+        li.innerHTML=`<h2>${text}</h2> <button class='btn btn-primary' onclick='del(${index})'><i class="far fa-trash-alt"></i> Delete</button>`
+        let editBtn=document.createElement('button')
+        editBtn.className='editBtn'
+        editBtn.className='btn btn-primary'
+        editBtn.innerHTML='<i class="far fa-edit"></i> Edit'
+        li.appendChild(editBtn)
+        li.setAttribute('data-index',index)
+        ul.appendChild(li)
+
+        editBtn.onclick=()=>{
+            edit(text,index)
+        }
+    }
+
+    create.addEventListener('click',()=>{
+        arr.push(inp.value)
+        localStorage.setItem('data',JSON.stringify(arr))
+        limaker(inp.value,arr.length-1)
+        inp.value=''
+    })
+    
+    arr.forEach((obj,index)=>{
+        limaker(obj,index)
+    })
+
+    clrBtn.onclick=()=>{
+        localStorage.clear()
+        ul.innerHTML=''
+    }
+
+    function del(index){
+        arr.splice(index,1)
+        localStorage.setItem('data',JSON.stringify(arr))
+        let removeli=document.querySelector(`li[data-index='${index}']`)
+        ul.removeChild(removeli)
+        ul.innerHTML=''
+        arr.forEach((obj,index)=>{
+        limaker(obj,index)
+        })
+    }
+
+    var changeindex=-1
+    function edit(e,index){
+        inp.value=e
+        changeindex=index
+    }
+    
+    function update(){
+        let newval=inp.value
+        arr[changeindex]=newval
+        localStorage.setItem('data',JSON.stringify(arr))
+
+        ul.innerHTML=""
+        
+        arr.forEach((obj,i)=>{
+        limaker(obj,i)
+        })
+        inp.value=''
+
+    }
+</script>
+</html>
